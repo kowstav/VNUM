@@ -81,7 +81,7 @@ const Widget = () => {
         boxShadow: "0 4px 20px 4px rgba(0,0,0,0.16)",
       };
 
-return (
+  return (
     <div
       ref={widgetRef}
       className={`${styles.widget} ${fullscreen ? styles.fullscreen : ""} ${

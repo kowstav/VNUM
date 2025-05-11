@@ -6,20 +6,29 @@ import styles from './BlobContainer.module.css';
 const BlobContainer = () => {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
-  const cleanupRef = useRef(null);
+  const rendererRef = useRef(null);
+  const animationFrameRef = useRef(null);
+  const analyserRef = useRef(null);
+  const dataArrayRef = useRef(null);
+  const basePositionsRef = useRef(null);
+  const meshRef = useRef(null);
+  const streamRef = useRef(null);
+  const audioContextRef = useRef(null);
 
   useEffect(() => {
-    let scene, camera, renderer, mesh, analyser, dataArray, basePositions;
+    let scene, camera, renderer, mesh;
     const noise = new Noise(Math.random());
 
     const init = async () => {
+      // Prevent multiple scene creations
+      if (sceneRef.current) return;
+
       scene = new THREE.Scene();
       sceneRef.current = scene;
 
       const container = containerRef.current;
-      // Fixed size for the blob visualization
-      const width = 400;  // You can adjust these dimensions
-      const height = 400; // to match your desired blob size
+      const width = 400;
+      const height = 400;
 
       camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
       camera.position.set(0, 0, 50);
@@ -30,6 +39,7 @@ const BlobContainer = () => {
       });
       renderer.setClearColor(0x000000, 0);
       renderer.setSize(width, height);
+      rendererRef.current = renderer;
       container.appendChild(renderer.domElement);
 
       const geometry = new THREE.IcosahedronGeometry(20, 70);
@@ -43,13 +53,14 @@ const BlobContainer = () => {
         flatShading: false
       });
       mesh = new THREE.Mesh(geometry, material);
+      meshRef.current = mesh;
       scene.add(mesh);
 
       // Store base positions
       const posAttr = mesh.geometry.attributes.position;
-      basePositions = new Float32Array(posAttr.count * 3);
+      basePositionsRef.current = new Float32Array(posAttr.count * 3);
       for (let i = 0; i < posAttr.count * 3; i++) {
-        basePositions[i] = posAttr.array[i];
+        basePositionsRef.current[i] = posAttr.array[i];
       }
 
       scene.add(new THREE.AmbientLight(0xffffff, 0.8));
@@ -59,47 +70,44 @@ const BlobContainer = () => {
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        streamRef.current = stream;
         handleAudio(stream);
       } catch (e) {
         console.error('Microphone access denied:', e);
       }
-
-      // Cleanup function
-      cleanupRef.current = () => {
-        renderer.dispose();
-        geometry.dispose();
-        material.dispose();
-        container.removeChild(renderer.domElement);
-      };
     };
 
     const handleAudio = (stream) => {
+      if (audioContextRef.current) return;
+
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioContextRef.current = audioCtx;
       const source = audioCtx.createMediaStreamSource(stream);
-      analyser = audioCtx.createAnalyser();
+      const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 256;
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      analyserRef.current = analyser;
+      dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
       source.connect(analyser);
       animate();
     };
 
     const animate = () => {
-      if (!sceneRef.current) return;
+      if (!sceneRef.current || !meshRef.current) return;
 
-      requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate);
 
-      if (analyser) {
-        analyser.getByteFrequencyData(dataArray);
-        const avgFreq = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+      if (analyserRef.current && dataArrayRef.current) {
+        analyserRef.current.getByteFrequencyData(dataArrayRef.current);
+        const avgFreq = dataArrayRef.current.reduce((a, b) => a + b, 0) / dataArrayRef.current.length;
 
-        const posAttr = mesh.geometry.attributes.position;
+        const posAttr = meshRef.current.geometry.attributes.position;
         const time = performance.now() * 0.001;
 
         for (let i = 0; i < posAttr.count; i++) {
           const ix = i * 3;
-          const x = basePositions[ix];
-          const y = basePositions[ix + 1];
-          const z = basePositions[ix + 2];
+          const x = basePositionsRef.current[ix];
+          const y = basePositionsRef.current[ix + 1];
+          const z = basePositionsRef.current[ix + 2];
 
           const offset = noise.perlin3(x * 0.1 + time, y * 0.1 + time, z * 0.1 + time);
           const scale = 1 + 0.3 * offset * (avgFreq / 128);
@@ -110,22 +118,55 @@ const BlobContainer = () => {
         }
 
         posAttr.needsUpdate = true;
-        mesh.geometry.computeVertexNormals();
+        meshRef.current.geometry.computeVertexNormals();
       }
 
-      mesh.rotation.y += 0.005;
-      mesh.rotation.x += 0.003;
+      if (meshRef.current) {
+        meshRef.current.rotation.y += 0.005;
+        meshRef.current.rotation.x += 0.003;
+      }
 
-      renderer.render(scene, camera);
+      if (rendererRef.current && sceneRef.current) {
+        rendererRef.current.render(sceneRef.current, camera);
+      }
     };
 
     init();
 
     return () => {
-      sceneRef.current = null;
-      if (cleanupRef.current) {
-        cleanupRef.current();
+      // Proper cleanup
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
       }
+
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
+        if (containerRef.current && rendererRef.current.domElement) {
+          containerRef.current.removeChild(rendererRef.current.domElement);
+        }
+      }
+
+      if (meshRef.current) {
+        meshRef.current.geometry.dispose();
+        meshRef.current.material.dispose();
+      }
+
+      sceneRef.current = null;
+      rendererRef.current = null;
+      meshRef.current = null;
+      analyserRef.current = null;
+      dataArrayRef.current = null;
+      basePositionsRef.current = null;
+      streamRef.current = null;
+      audioContextRef.current = null;
     };
   }, []);
 

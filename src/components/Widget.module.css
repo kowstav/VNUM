@@ -11,10 +11,8 @@
     width 0.35s cubic-bezier(.42,0,.58,1),
     height 0.35s cubic-bezier(.42,0,.58,1),
     flex-direction 0.3s;
-  z-index: 10;  /* Higher z-index than the blob */
+  z-index: 10;
   backdrop-filter: blur(6px) saturate(140%);
-  width: 340px;
-  height: 220px;
 }
 
 .fullscreen {
