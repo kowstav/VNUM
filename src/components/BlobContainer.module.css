@@ -1,10 +1,16 @@
 .blobContainer {
-  position: fixed;
-  top: 35vh;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 400px;
-  height: 400px;
-  z-index: 1;
+  width: 800px;
+  height: 45vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
+  overflow: visible; /* Allow blob to overflow container */
+}
+
+.blobContainer canvas {
+  width: 800px !important;
+  height: 45vh !important; /* Match container height */
+  max-height: none !important; /* Remove any height restrictions */
 }

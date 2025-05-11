@@ -6,12 +6,14 @@ import styles from "./App.module.css";
 export default function App() {
   return (
     <div className={styles.appContainer}>
-      <div className={styles.topSection}>
+      <header className={styles.header}></header>
+      <div className={styles.blobSection}>
         <BlobContainer />
       </div>
-      <div className={styles.bottomSection}>
+      <div className={styles.widgetSection}>
         <Widget />
       </div>
+      <footer className={styles.footer}></footer>
     </div>
   );
 }

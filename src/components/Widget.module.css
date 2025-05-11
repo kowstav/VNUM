@@ -1,26 +1,14 @@
 .widget {
-  position: absolute;
+  width: 60%;
+  height: 100%;
   background: rgba(28, 28, 35, 0.84);
   border-radius: 18px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  cursor: grab;
   user-select: none;
-  transition: 
-    width 0.35s cubic-bezier(.42,0,.58,1),
-    height 0.35s cubic-bezier(.42,0,.58,1),
-    flex-direction 0.3s;
-  z-index: 10;
   backdrop-filter: blur(6px) saturate(140%);
-}
-
-.fullscreen {
-    
-}
-
-.vertical {
-  flex-direction: row;
+  position: relative; /* Changed from absolute to relative */
 }
 
 .transcription {
@@ -45,13 +33,6 @@
   align-items: center;
   border-top: 1.5px solid rgba(255,255,255,0.11);
   background: rgba(0,0,0,0.08);
-  transition: flex-direction 0.3s;
-}
-
-.vertical .buttons {
-  flex-direction: column;
-  border-top: none;
-  border-left: 1.5px solid rgba(255,255,255,0.11);
 }
 
 .buttons button {
@@ -65,6 +46,7 @@
   transition: background 0.15s;
   outline: none;
 }
+
 .buttons button:active,
 .buttons button:focus {
   background: rgba(255,255,255,0.085);

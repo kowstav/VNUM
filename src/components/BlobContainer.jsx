@@ -20,29 +20,31 @@ const BlobContainer = () => {
     const noise = new Noise(Math.random());
 
     const init = async () => {
-      // Prevent multiple scene creations
       if (sceneRef.current) return;
 
       scene = new THREE.Scene();
       sceneRef.current = scene;
 
       const container = containerRef.current;
-      const width = 400;
-      const height = 400;
+      const width = 800;
+      const height = container.clientHeight;
 
       camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-      camera.position.set(0, 0, 50);
+      camera.position.z = 160; // Updated as requested
 
       renderer = new THREE.WebGLRenderer({ 
-        antialias: true,
-        alpha: true
+        antialias: true
       });
-      renderer.setClearColor(0x000000, 0);
+      renderer.setClearColor(0xffffff);
       renderer.setSize(width, height);
       rendererRef.current = renderer;
+      
+      if (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
       container.appendChild(renderer.domElement);
 
-      const geometry = new THREE.IcosahedronGeometry(20, 70);
+      const geometry = new THREE.IcosahedronGeometry(80, 70); // Updated as requested
       const material = new THREE.MeshPhysicalMaterial({
         color: 0x000000,
         roughness: 0.4,
@@ -52,6 +54,7 @@ const BlobContainer = () => {
         reflectivity: 1.0,
         flatShading: false
       });
+      
       mesh = new THREE.Mesh(geometry, material);
       meshRef.current = mesh;
       scene.add(mesh);
@@ -74,12 +77,11 @@ const BlobContainer = () => {
         handleAudio(stream);
       } catch (e) {
         console.error('Microphone access denied:', e);
+        animate();
       }
     };
 
     const handleAudio = (stream) => {
-      if (audioContextRef.current) return;
-
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       audioContextRef.current = audioCtx;
       const source = audioCtx.createMediaStreamSource(stream);
@@ -121,20 +123,15 @@ const BlobContainer = () => {
         meshRef.current.geometry.computeVertexNormals();
       }
 
-      if (meshRef.current) {
-        meshRef.current.rotation.y += 0.005;
-        meshRef.current.rotation.x += 0.003;
-      }
+      meshRef.current.rotation.y += 0.005;
+      meshRef.current.rotation.x += 0.003;
 
-      if (rendererRef.current && sceneRef.current) {
-        rendererRef.current.render(sceneRef.current, camera);
-      }
+      rendererRef.current.render(sceneRef.current, camera);
     };
 
     init();
 
     return () => {
-      // Proper cleanup
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -147,11 +144,8 @@ const BlobContainer = () => {
         audioContextRef.current.close();
       }
 
-      if (rendererRef.current) {
-        rendererRef.current.dispose();
-        if (containerRef.current && rendererRef.current.domElement) {
-          containerRef.current.removeChild(rendererRef.current.domElement);
-        }
+      if (rendererRef.current && rendererRef.current.domElement) {
+        rendererRef.current.domElement.remove();
       }
 
       if (meshRef.current) {
