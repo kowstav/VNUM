@@ -10,10 +10,11 @@
   transition: 
     width 0.35s cubic-bezier(.42,0,.58,1),
     height 0.35s cubic-bezier(.42,0,.58,1),
-    flex-direction 0.3s,
-    top 0.2s, left 0.2s;
-  z-index: 10;
+    flex-direction 0.3s;
+  z-index: 10;  /* Higher z-index than the blob */
   backdrop-filter: blur(6px) saturate(140%);
+  width: 340px;
+  height: 220px;
 }
 
 .fullscreen {
@@ -22,16 +23,6 @@
 
 .vertical {
   flex-direction: row;
-}
-
-.blobContainer {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 1;
-  pointer-events: none;
-  background: transparent;
-  background: radial-gradient(ellipse at 40% 60%, rgba(120,80,255,0.10) 0%, transparent 80%);
 }
 
 .transcription {

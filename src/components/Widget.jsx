@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./Widget.module.css";
-import BlobContainer from "./BlobContainer";
 import Transcription from "./Transcription";
 import WidgetButtons from "./WidgetButtons";
 
@@ -12,7 +11,6 @@ const Widget = () => {
   const [fullscreen, setFullscreen] = useState(false);
   const [vertical, setVertical] = useState(false);
 
-  // Drag handlers
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (!drag) return;
@@ -34,10 +32,8 @@ const Widget = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-    // eslint-disable-next-line
   }, [drag, mouseOffset]);
 
-  // Orientation logic
   const adjustOrientation = () => {
     if (!widgetRef.current) return;
     const rect = widgetRef.current.getBoundingClientRect();
@@ -58,12 +54,10 @@ const Widget = () => {
     return () => window.removeEventListener("resize", adjustOrientation);
   }, []);
 
-  // Fullscreen toggle
   const handleFullscreen = () => setFullscreen((f) => !f);
 
-  // MouseDown to drag
   const onMouseDown = (e) => {
-    if (e.target.closest(`.${styles.buttons}`)) return; // don't drag from buttons
+    if (e.target.closest(`.${styles.buttons}`)) return;
     setDrag(true);
     setMouseOffset({
       x: e.clientX - offset.x,
@@ -71,7 +65,6 @@ const Widget = () => {
     });
   };
 
-  // Container styles
   const style = fullscreen
     ? {
         width: "80vw",
@@ -88,7 +81,7 @@ const Widget = () => {
         boxShadow: "0 4px 20px 4px rgba(0,0,0,0.16)",
       };
 
-  return (
+return (
     <div
       ref={widgetRef}
       className={`${styles.widget} ${fullscreen ? styles.fullscreen : ""} ${
@@ -97,7 +90,6 @@ const Widget = () => {
       style={style}
       onMouseDown={onMouseDown}
     >
-      <BlobContainer />
       <Transcription />
       <WidgetButtons
         onFullscreen={handleFullscreen}

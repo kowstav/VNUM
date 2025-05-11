@@ -1,0 +1,10 @@
+.blobContainer {
+  position: fixed;  /* This makes it independent of other elements */
+  top: 35vh;       /* Centers vertically in the top 70% section */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;    /* Match the dimensions set in the component */
+  height: 400px;
+  z-index: 1;      /* Lower z-index so container can appear above */
+  pointer-events: none;  /* Allows clicking through the blob */
+}
