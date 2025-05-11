@@ -1,0 +1,82 @@
+.widget {
+  position: absolute;
+  background: rgba(28, 28, 35, 0.84);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  transition: 
+    width 0.35s cubic-bezier(.42,0,.58,1),
+    height 0.35s cubic-bezier(.42,0,.58,1),
+    flex-direction 0.3s,
+    top 0.2s, left 0.2s;
+  z-index: 10;
+  backdrop-filter: blur(6px) saturate(140%);
+}
+
+.fullscreen {
+    
+}
+
+.vertical {
+  flex-direction: row;
+}
+
+.blobContainer {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background: transparent;
+  background: radial-gradient(ellipse at 40% 60%, rgba(120,80,255,0.10) 0%, transparent 80%);
+}
+
+.transcription {
+  flex: 9;
+  z-index: 2;
+  padding: 18px 16px 8px 16px;
+  color: #fff;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-size: 15.5px;
+  overflow-y: auto;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.13);
+  background: transparent;
+}
+
+.buttons {
+  flex: 1;
+  z-index: 2;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1.5px solid rgba(255,255,255,0.11);
+  background: rgba(0,0,0,0.08);
+  transition: flex-direction 0.3s;
+}
+
+.vertical .buttons {
+  flex-direction: column;
+  border-top: none;
+  border-left: 1.5px solid rgba(255,255,255,0.11);
+}
+
+.buttons button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  outline: none;
+}
+.buttons button:active,
+.buttons button:focus {
+  background: rgba(255,255,255,0.085);
+}
