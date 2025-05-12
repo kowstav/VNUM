@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible; /* Allow blob to overflow */
+  overflow: visible; /* Keep this to allow blob overflow */
 }
 
 .widgetSection {

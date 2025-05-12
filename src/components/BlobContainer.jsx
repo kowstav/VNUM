@@ -14,7 +14,11 @@ const BlobContainer = () => {
   const meshRef = useRef(null);
   const streamRef = useRef(null);
   const audioContextRef = useRef(null);
-
+  const handleBlobClick = () => {
+    // Trigger the drip animation
+    const radialSpreadEvent = new CustomEvent('triggerDrip');
+    document.dispatchEvent(radialSpreadEvent);
+  };
   useEffect(() => {
     let scene, camera, renderer, mesh;
     const noise = new Noise(Math.random());
@@ -164,7 +168,14 @@ const BlobContainer = () => {
     };
   }, []);
 
-  return <div ref={containerRef} className={styles.blobContainer} />;
+  return (
+    <div 
+      ref={containerRef}
+      className={styles.blobContainer}
+      onClick={handleBlobClick}
+      data-blob-container    
+    />
+  );
 };
 
 export default BlobContainer;

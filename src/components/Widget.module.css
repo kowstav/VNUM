@@ -1,7 +1,6 @@
 .widget {
   width: 60%;
   height: 100%;
-  position: absolute;
   background: rgba(28, 28, 35, 0.84);
   border-radius: 18px;
   display: flex;
@@ -11,17 +10,19 @@
   user-select: none;
   z-index: 10;
   backdrop-filter: blur(6px) saturate(140%);
-  transition:
-    width 0.5s cubic-bezier(.42,0,.58,1),
-    height 0.5s cubic-bezier(.42,0,.58,1),
-    top 0.5s cubic-bezier(.42,0,.58,1),
-    left 0.5s cubic-bezier(.42,0,.58,1),
-    background 0.3s cubic-bezier(.42,0,.58,1),
-    box-shadow 0.3s cubic-bezier(.42,0,.58,1),
-    border-radius 0.3s cubic-bezier(.42,0,.58,1);
-  margin-bottom: 8vh;
+  /* Set default transitions to instant */
+  transition: top 1s, bottom 1s;
 }
 
+/* Add transition only for top when maximized */
+.widget.maximized {
+  transition: top 1.2s cubic-bezier(.42,0,.58,1);
+}
+
+/* Add transition only for bottom when not maximized */
+.widget:not(.maximized) {
+  transition: bottom 1.2s cubic-bezier(.42,0,.58,1);
+}
 .transcription {
   flex: 9;
   z-index: 2;
