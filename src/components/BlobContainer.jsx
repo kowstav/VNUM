@@ -25,26 +25,27 @@ const BlobContainer = () => {
       scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      const container = containerRef.current;
-      const width = 800;
-      const height = container.clientHeight;
+      // Use full window dimensions as in Vblob_v14.html
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
       camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-      camera.position.z = 160; // Updated as requested
+      camera.position.set(0, 0, 73);
+      camera.updateProjectionMatrix();
 
-      renderer = new THREE.WebGLRenderer({ 
-        antialias: true
-      });
+      renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setClearColor(0xffffff);
       renderer.setSize(width, height);
       rendererRef.current = renderer;
-      
+
+      const container = containerRef.current;
       if (container.firstChild) {
         container.removeChild(container.firstChild);
       }
       container.appendChild(renderer.domElement);
 
-      const geometry = new THREE.IcosahedronGeometry(80, 70); // Updated as requested
+      // Geometry and material from Vblob_v14.html
+      const geometry = new THREE.IcosahedronGeometry(40, 70);
       const material = new THREE.MeshPhysicalMaterial({
         color: 0x000000,
         roughness: 0.4,
@@ -52,9 +53,9 @@ const BlobContainer = () => {
         clearcoat: 1.0,
         clearcoatRoughness: 0.05,
         reflectivity: 1.0,
-        flatShading: false
+        flatShading: false,
       });
-      
+
       mesh = new THREE.Mesh(geometry, material);
       meshRef.current = mesh;
       scene.add(mesh);
@@ -66,31 +67,39 @@ const BlobContainer = () => {
         basePositionsRef.current[i] = posAttr.array[i];
       }
 
+      // Lighting
       scene.add(new THREE.AmbientLight(0xffffff, 0.8));
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
       directionalLight.position.set(10, 20, 10);
       scene.add(directionalLight);
 
+      // Handle window resize
+      const onWindowResize = () => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener('resize', onWindowResize);
+
+      // Audio setup
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
         streamRef.current = stream;
-        handleAudio(stream);
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioContextRef.current = audioCtx;
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyserRef.current = analyser;
+        dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
+        source.connect(analyser);
+        animate();
       } catch (e) {
         console.error('Microphone access denied:', e);
         animate();
       }
-    };
-
-    const handleAudio = (stream) => {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      audioContextRef.current = audioCtx;
-      const source = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-      analyserRef.current = analyser;
-      dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-      source.connect(analyser);
-      animate();
     };
 
     const animate = () => {
@@ -132,27 +141,18 @@ const BlobContainer = () => {
     init();
 
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-
-      if (rendererRef.current && rendererRef.current.domElement) {
+      window.removeEventListener('resize', null);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
+      if (audioContextRef.current) audioContextRef.current.close();
+      if (rendererRef.current) {
         rendererRef.current.domElement.remove();
+        rendererRef.current.dispose();
       }
-
       if (meshRef.current) {
         meshRef.current.geometry.dispose();
         meshRef.current.material.dispose();
       }
-
       sceneRef.current = null;
       rendererRef.current = null;
       meshRef.current = null;

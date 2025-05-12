@@ -9,6 +9,7 @@
   user-select: none;
   backdrop-filter: blur(6px) saturate(140%);
   position: relative; /* Changed from absolute to relative */
+  margin-bottom: 8vh;
 }
 
 .transcription {
