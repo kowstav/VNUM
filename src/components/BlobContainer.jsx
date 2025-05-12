@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { Noise } from 'noisejs';
 import styles from './BlobContainer.module.css';
+import styles2 from './RadialSpread.module.css';
 
 const BlobContainer = () => {
   const containerRef = useRef(null);
@@ -14,11 +15,33 @@ const BlobContainer = () => {
   const meshRef = useRef(null);
   const streamRef = useRef(null);
   const audioContextRef = useRef(null);
-  const handleBlobClick = () => {
-    // Trigger the drip animation
-    const radialSpreadEvent = new CustomEvent('triggerDrip');
-    document.dispatchEvent(radialSpreadEvent);
+
+  const handleCanvasClick = () => {
+    console.log('Canvas clicked');
+    // Create a drop element
+    const drop = document.createElement('div');
+    drop.className = styles2.drop;
+    document.body.appendChild(drop);
+
+    // Position the drop at the blob's position
+    const blobElement = containerRef.current;
+    const blobRect = blobElement.getBoundingClientRect();
+    drop.style.left = `${blobRect.left + blobRect.width / 2}px`;
+    drop.style.top = `${blobRect.top + blobRect.height / 2}px`;
+
+    // Trigger the radial spread after drop animation
+    setTimeout(() => {
+      drop.remove();
+      const event = new CustomEvent('triggerDrip', {
+        detail: {
+          timestamp: '2025-05-12 08:36:00',
+          user: 'kowstav'
+        }
+      });
+      document.dispatchEvent(event);
+    }, 500);
   };
+
   useEffect(() => {
     let scene, camera, renderer, mesh;
     const noise = new Noise(Math.random());
@@ -29,7 +52,6 @@ const BlobContainer = () => {
       scene = new THREE.Scene();
       sceneRef.current = scene;
 
-      // Use full window dimensions as in Vblob_v14.html
       const width = window.innerWidth;
       const height = window.innerHeight;
 
@@ -46,9 +68,12 @@ const BlobContainer = () => {
       if (container.firstChild) {
         container.removeChild(container.firstChild);
       }
+
+      // Add click handler to the canvas
+      renderer.domElement.addEventListener('click', handleCanvasClick);
       container.appendChild(renderer.domElement);
 
-      // Geometry and material from Vblob_v14.html
+      // Geometry and material setup
       const geometry = new THREE.IcosahedronGeometry(40, 70);
       const material = new THREE.MeshPhysicalMaterial({
         color: 0x000000,
@@ -71,7 +96,7 @@ const BlobContainer = () => {
         basePositionsRef.current[i] = posAttr.array[i];
       }
 
-      // Lighting
+      // Lighting setup
       scene.add(new THREE.AmbientLight(0xffffff, 0.8));
       const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
       directionalLight.position.set(10, 20, 10);
@@ -146,6 +171,9 @@ const BlobContainer = () => {
 
     return () => {
       window.removeEventListener('resize', null);
+      if (rendererRef.current) {
+        rendererRef.current.domElement.removeEventListener('click', handleCanvasClick);
+      }
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       if (streamRef.current) streamRef.current.getTracks().forEach(track => track.stop());
       if (audioContextRef.current) audioContextRef.current.close();
@@ -172,8 +200,8 @@ const BlobContainer = () => {
     <div 
       ref={containerRef}
       className={styles.blobContainer}
-      onClick={handleBlobClick}
-      data-blob-container    
+      data-blob-container
+      style={{ cursor: 'pointer' }}
     />
   );
 };

@@ -1,36 +1,60 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './RadialSpread.module.css';
 
 const RadialSpread = ({ targetContainerId }) => {
-  const createDrip = () => {
-    const drop = document.createElement('div');
-    drop.classList.add(styles.drop);
-    document.body.appendChild(drop);
+  useEffect(() => {
+    const handleDrip = () => {
+      console.log('Drip event received'); // Debug log
+      
+      // Create and position the drop
+      const drop = document.createElement('div');
+      drop.classList.add(styles.drop);
+      document.body.appendChild(drop);
 
-    // Position the drop relative to the existing blob
-    const blob = document.querySelector('[data-blob-container]');
-    if (blob) {
-      const blobRect = blob.getBoundingClientRect();
-      drop.style.left = `${blobRect.left + blobRect.width / 2}px`;
-      drop.style.top = `${blobRect.bottom}px`;
-    }
-
-    setTimeout(() => {
-      drop.remove();
-      const wave = document.createElement('div');
-      wave.classList.add(styles.radialWave);
-      const container = document.getElementById(targetContainerId);
-      if (container) {
-        container.appendChild(wave);
-        
-        setTimeout(() => {
-          container.style.background = 'rgba(0, 0, 0, 0.6)';
-        }, 500);
+      // Get blob position for drop positioning
+      const blob = document.querySelector('[data-blob-container]');
+      console.log('Blob element found:', blob); // Debug log
+      
+      if (blob) {
+        const blobRect = blob.getBoundingClientRect();
+        console.log('Blob position:', blobRect); // Debug log
+        drop.style.left = `${blobRect.left + blobRect.width / 2}px`;
+        drop.style.top = `${blobRect.top + blobRect.height}px`;
       }
-    }, 600);
-  };
 
-  return null; // This component doesn't render anything
+      // Handle the drop animation completion
+      setTimeout(() => {
+        drop.remove();
+        const container = document.getElementById(targetContainerId);
+        console.log('Target container found:', container); // Debug log
+        
+        if (container) {
+          const wave = document.createElement('div');
+          wave.classList.add(styles.radialWave);
+          container.appendChild(wave);
+
+          // Add darkening effect
+          setTimeout(() => {
+            container.style.background = 'rgba(0, 0, 0, 0.6)';
+          }, 500);
+
+          // Clean up wave after animation
+          setTimeout(() => {
+            wave.remove();
+          }, 2000);
+        }
+      }, 600);
+    };
+
+    console.log('RadialSpread mounted, adding event listener'); // Debug log
+    document.addEventListener('triggerDrip', handleDrip);
+    return () => {
+      console.log('RadialSpread unmounted, removing event listener'); // Debug log
+      document.removeEventListener('triggerDrip', handleDrip);
+    };
+  }, [targetContainerId]);
+
+  return null;
 };
 
 export default RadialSpread;
