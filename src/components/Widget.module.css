@@ -10,56 +10,23 @@
   user-select: none;
   z-index: 10;
   backdrop-filter: blur(6px) saturate(140%);
-  /* Set default transitions to instant */
   transition: top 1s, bottom 1s;
+  padding: 1rem;
 }
 
-/* Add transition only for top when maximized */
+/* Add or update these classes */
 .widget.maximized {
   transition: top 1.2s cubic-bezier(.42,0,.58,1);
 }
 
-/* Add transition only for bottom when not maximized */
 .widget:not(.maximized) {
   transition: bottom 1.2s cubic-bezier(.42,0,.58,1);
 }
+
 .transcription {
-  flex: 9;
+  flex: 1;
   z-index: 2;
   padding: 18px 16px 8px 16px;
   color: #fff;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  font-size: 15.5px;
   overflow-y: auto;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.13);
-  background: transparent;
-}
-
-.buttons {
-  flex: 1;
-  z-index: 2;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 1.5px solid rgba(255,255,255,0.11);
-  background: rgba(0,0,0,0.08);
-}
-
-.buttons button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.4rem;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background 0.15s;
-  outline: none;
-}
-
-.buttons button:active,
-.buttons button:focus {
-  background: rgba(255,255,255,0.085);
 }

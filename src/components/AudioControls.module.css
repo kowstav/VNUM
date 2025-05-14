@@ -1,0 +1,92 @@
+.audioControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.recordingSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.recordButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.recordButton.recording {
+  background-color: #f44336;
+  animation: pulse 2s infinite;
+}
+
+.timer {
+  font-family: monospace;
+  font-size: 1.2rem;
+  color: #fff;
+  min-width: 60px;
+  text-align: center;
+  padding: 0.3rem 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.uploadSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.uploadLabel {
+  padding: 0.5rem 1rem;
+  background-color: #2196F3;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.uploadLabel:hover {
+  background-color: #1976D2;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileName {
+  color: #fff;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.recordButton:hover {
+  background-color: #43A047;
+}
+
+.recordButton.recording:hover {
+  background-color: #d32f2f;
+}

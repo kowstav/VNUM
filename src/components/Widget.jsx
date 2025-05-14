@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import styles from "./Widget.module.css";
 import Transcription from "./Transcription";
 import WidgetButtons from "./WidgetButtons";
-import RadialSpread from "./RadialSpread"; // Updated path
+import AudioControls from "./AudioControls"; // Add this import
 
 const Widget = () => {
   const [isMaximized, setIsMaximized] = useState(false);
@@ -50,12 +50,12 @@ const Widget = () => {
       style={getWidgetStyle()}
       id="mainWidget"
     >
+      <AudioControls /> {/* Add this line */}
       <Transcription />
       <WidgetButtons
         onFullscreen={handleMaximizeToggle}
         isFullscreen={isMaximized}
       />
-      <RadialSpread targetContainerId="mainWidget" />
     </div>
   );
 };
