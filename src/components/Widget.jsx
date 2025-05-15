@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Widget.module.css";
 import WidgetButtons from "./WidgetButtons";
+import Transcription from "./Transcription";
 
 const Widget = () => {
   const [isMaximized, setIsMaximized] = useState(false);
   const widgetRef = useRef(null);
   const [initialSize, setInitialSize] = useState(null);
+  const [transcriptions, setTranscriptions] = useState([]);
 
   useEffect(() => {
     if (widgetRef.current && !initialSize) {
@@ -41,10 +43,15 @@ const Widget = () => {
       style={getWidgetStyle()}
       id="mainWidget"
     >
-      <WidgetButtons
-        onFullscreen={handleMaximizeToggle}
-        isFullscreen={isMaximized}
-      />
+      <div className={styles.widgetContent}>
+        <Transcription transcriptions={transcriptions} />
+      </div>
+      <div className={styles.widgetControls}>
+        <WidgetButtons
+          onFullscreen={handleMaximizeToggle}
+          isFullscreen={isMaximized}
+        />
+      </div>
     </div>
   );
 };
