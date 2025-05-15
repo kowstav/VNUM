@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Widget.module.css";
-import Transcription from "./Transcription";
 import WidgetButtons from "./WidgetButtons";
-import AudioControls from "./AudioControls"; // Add this import
 
 const Widget = () => {
   const [isMaximized, setIsMaximized] = useState(false);
@@ -27,19 +25,12 @@ const Widget = () => {
     if (isMaximized) {
       return {
         width: '60vw',
-        height: '60vh',
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 1000
+        height: '60vh'
       };
     }
     return initialSize ? {
       width: `${initialSize.width}px`,
-      height: `${initialSize.height}px`,
-      position: 'relative',
-      transform: 'none'
+      height: `${initialSize.height}px`
     } : {};
   };
 
@@ -50,8 +41,6 @@ const Widget = () => {
       style={getWidgetStyle()}
       id="mainWidget"
     >
-      <AudioControls /> {/* Add this line */}
-      <Transcription />
       <WidgetButtons
         onFullscreen={handleMaximizeToggle}
         isFullscreen={isMaximized}

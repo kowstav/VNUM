@@ -46,7 +46,7 @@ const BlobContainer = () => {
       container.appendChild(renderer.domElement);
 
       // Geometry and material setup
-      const geometry = new THREE.IcosahedronGeometry(40, 70);
+      const geometry = new THREE.IcosahedronGeometry(30, 1);
       const material = new THREE.MeshPhysicalMaterial({
         color: 0x000000,
         roughness: 0.4,
